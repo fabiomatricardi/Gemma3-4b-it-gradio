@@ -70,6 +70,10 @@ def init_shutdown():
 
 
 example = """
+[Gemma 3](https://developers.googleblog.com/en/introducing-gemma3/) comes in a range of sizes (1B, 4B, 12B and 27B)
+These are the Google most advanced, portable and responsibly developed open models yet. 
+<br>
+
 #### Example for Image Generation help
 """
 mycode ="""
@@ -81,37 +85,41 @@ The image should be about '''[userinput]'''. Comic art style.
 note = """#### 🔹 Gemma 3 4B Instruct
 > [Gemma 3](https://ai.google.dev/gemma/docs/core), a collection of lightweight, state-of-the-art open models built from the same research and technology that powers our Gemini 2.0 models. 
 <br>
-
-[Gemma 3](https://developers.googleblog.com/en/introducing-gemma3/) comes in a range of sizes (1B, 4B, 12B and 27B)
-These are the Google most advanced, portable and responsibly developed open models yet. 
-<br><br>
-
+<br>
 Starting settings: `Temperature=0.45` `Max_Length=1500`
+"""
+css = """
+#warning {justify-content: center; text-align: center}
+.feedback textarea {text-align: center}
 """
 
 # STARTING THE INTERFACE
-with gr.Blocks(theme=gr.themes.Ocean()) as demo: #gr.themes.Ocean() Citrus() #https://www.gradio.app/guides/theming-guide
-    gr.Markdown("# Chat with Gemma 3 4b Instruct 🔷 running Locally with [llama.cpp](https://github.com/ggml-org/llama.cpp)")
+with gr.Blocks(theme=gr.themes.Ocean(),css=css) as demo: #gr.themes.Ocean() Citrus() #https://www.gradio.app/guides/theming-guide
+    gr.Markdown("# Chat with Gemma 3 4b Instruct 🔷 running Locally with [llama.cpp](https://github.com/ggml-org/llama.cpp)",elem_id='warning')
     with gr.Row():
         with gr.Column(scale=1):
+            gr.Image('https://i.ibb.co/7dj6fR0v/power-Llama.png',show_fullscreen_button=False,show_label=False,show_download_button=False)
+            gr.Image('https://i.ibb.co/0pHhTLCh/power-Gemma3.png',show_fullscreen_button=False,show_label=False,show_download_button=False)
             start_btn = gr.Button("Start Model Server",variant='primary')
             stop_btn = gr.Button("Stop Model Server") 
             srv_stat = gr.Textbox(label="Status")           
             maxlen = gr.Slider(minimum=250, maximum=4096, value=1500, step=1, label="Max new tokens")
             temperature = gr.Slider(minimum=0.1, maximum=4.0, value=0.45, step=0.1, label="Temperature")          
-            gr.Markdown(note)
-            closeall = gr.Button("Close the app",variant='stop')
-            with gr.Accordion("See suggestions",open=False):
-                gr.Markdown(example)
-                gr.Code(mycode,language='markdown',wrap_lines=True)
-        with gr.Column(scale=3):
+
+        with gr.Column(scale=4):
             chatbot = gr.Chatbot(type="messages",show_copy_button = True,
                     avatar_images=['https://icons.iconarchive.com/icons/artua/dragon-soft/512/User-icon.png',''
                     'https://clipartcraft.com/images/transparent-background-google-logo-brand-2.png'],
                     height=550, layout='bubble')
             msg = gr.Textbox(lines=3,placeholder='Shift+Enter to send your message')
+        with gr.Column(scale=1):  
             # Button the clear the conversation history
-            clear = gr.ClearButton([msg, chatbot],variant='primary')
+            clear = gr.ClearButton([msg, chatbot],variant='stop')
+            closeall = gr.Button("Close the app",variant='primary')
+            gr.Markdown(note)
+            with gr.Accordion("See suggestions",open=False):
+                gr.Markdown(example)
+                gr.Code(mycode,language='markdown',wrap_lines=True)            
     # Handle the User Messages
     def user(user_message, history: list):
         return "", history + [{"role": "user", "content": user_message}]    
